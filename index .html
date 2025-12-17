@@ -1,41 +1,331 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title> 欢迎来到江落离的网站</title>
-  </head>  
-  <body style="margin: 0;">
-    <div style="
-      background-color:#f1f1f1;
-      text-align: center;
-      padding:40px;
-      "
-    >
-      <img alt="江落离" src="<a href="https://imgse.com/i/pkcuPr8"><img src="https://s21.ax1x.com/2024/06/30/pkcuPr8.png" alt="pkcuPr8.png" border="0" /></a>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习计划与视频学习</title>
+    <style>
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        body {
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        /* 模块列表样式 */
+        .modules-list {
+            margin-bottom: 40px;
+        }
+        .module-item {
+            background: white;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .module-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .module-item h3 {
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+        }
+        .module-item h3::before {
+            content: "▶️";
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+        .module-item:hover h3::before {
+            transform: translateX(5px);
+        }
+
+        /* 学习计划样式 */
+        .plan-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .plan-section h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .plan-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .plan-item {
+            padding: 15px;
+            border-left: 4px solid #bdc3c7;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+        .plan-item.today {
+            border-left-color: #2ecc71;
+            background: #f0f9f0;
+        }
+        .plan-date {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .plan-module, .plan-goal {
+            color: #34495e;
+            margin: 3px 0;
+            display: flex;
+            align-items: center;
+        }
+        .plan-module::before, .plan-goal::before {
+            margin-right: 8px;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 8px;
+            padding: 25px;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: color 0.3s ease;
+        }
+        .close-modal:hover {
+            color: #e74c3c;
+        }
+        .modal-title {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 1px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+        .videos-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .video-item {
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .video-info h4 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .video-info a {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 0.9em;
+            word-break: break-all;
+            max-width: 600px;
+            display: inline-block;
+        }
+        .video-info a:hover {
+            text-decoration: underline;
+        }
+        .watched-tag {
+            background: #2ecc71;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        /* 响应式样式 */
+        @media (max-width: 768px) {
+            .video-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .watched-tag {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📖 学习视频与计划安排</h1>
+
+        <!-- 模块列表 -->
+        <div class="modules-list" id="modulesList"></div>
+
+        <!-- 学习计划 -->
+        <div class="plan-section">
+            <h2>📅 我的学习计划</h2>
+            <div class="plan-list" id="planList"></div>
+        </div>
     </div>
-    <div style="
-      max-width: 760px;
-      margin: 30px auto;
-      padding: 15px;
-      line-height:2.0;
-    ">
-      <p>你好，我是江落离，欢迎来到我的网站，我是一个平平无奇的高中生，跟大多数高中生一样进入了学生会，但是我觉得能在学生会里面工作，能够让我体会到步入社会的感觉。例如那复杂的人际交往，还能锻炼到我的语言表达能力。</p>
-      <p>但是不同之处在于我看了博主康文昌的视频，是他教会了我自己亲手来制作这个网站，他也算是我人生中的一个贵人，在此我要感谢他一下。</p>
-      <p>另外多肉姐，晚均姐，绘裙姐和铜铃，住气，续冻等等在我第一次当志愿者时遇到的好朋友们，希望他们天天开心</p>
-      <p>Hello, I am Jiang Qingfu, welcome to my website, I am an ordinary high school student, like most high school students entered the student union, but I think working in the student union, can let me realize the feeling of stepping into the society. For example, the complex interpersonal communication can also exercise my language expression ability.</p>
-      <p>But the difference is that I watched the video of the blogger Kang Wenchang, who taught me to make this website by my own hand. He is also a noble person in my life, and here I want to thank him.</p>
-      <p>In addition, Sister Meaty, Sister Evening average, Sister Painted skirt and copper Bell, Qi, continue to freeze and other good friends I met when I was a volunteer for the first time, I hope they are happy every day</p>
+
+    <!-- 视频模态框 -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <div class="videos-list" id="modalVideos"></div>
+        </div>
     </div>
-    <divstyle="
-      background-color:#f1f1f1;
-      text-align: center;
-      padding:40px;
-      font-size: 12px;
-      "
-    >
-      <p>版权所有: https://jiang3106.github.io/jiangluo/</p>
-      <a href="https://jiang3106.github.io/jiangluo/">我的网站<p>
-    </div>
-  </body>
+
+    <script>
+        // 示例视频数据（请根据实际情况修改）
+        const videos = {
+            "HTML基础": [
+                ["HTML文档结构", "https://example.com/html-structure"],
+                ["HTML常用标签", "https://example.com/html-tags"],
+                ["HTML表单元素", "https://example.com/html-forms"]
+            ],
+            "CSS样式": [
+                ["CSS选择器", "https://example.com/css-selectors"],
+                ["CSS盒模型", "https://example.com/css-box-model"],
+                ["CSS Flex布局", "https://example.com/css-flex"]
+            ],
+            "JavaScript入门": [
+                ["JS变量与数据类型", "https://example.com/js-variables"],
+                ["JS函数基础", "https://example.com/js-functions"],
+                ["JS DOM操作", "https://example.com/js-dom"]
+            ],
+            "响应式设计": [
+                ["媒体查询", "https://example.com/media-queries"],
+                ["移动端适配技巧", "https://example.com/mobile-adaptation"]
+            ]
+        };
+
+        // 页面加载时渲染模块列表
+        window.onload = function() {
+            renderModules();
+            generatePlan();
+        };
+
+        // 渲染模块列表
+        function renderModules() {
+            const modulesList = document.getElementById('modulesList');
+            Object.keys(videos).forEach(module => {
+                const moduleItem = document.createElement('div');
+                moduleItem.className = 'module-item';
+                moduleItem.innerHTML = `<h3>${module}</h3>`;
+                moduleItem.onclick = () => showModal(module, videos[module]);
+                modulesList.appendChild(moduleItem);
+            });
+        }
+
+        // 弹窗控制
+        function showModal(title, videoList) {
+            document.getElementById('modalTitle').innerText = title;
+            let videoHtml = '';
+            videoList.forEach((video, index) => {
+                const key = `${title}_${index+1}`;
+                const watched = isWatched(key) ? '<span class="watched-tag">已观看</span>' : '';
+                videoHtml += `
+                <div class="video-item">
+                    <div class="video-info">
+                        <h4>${index+1}. ${video[0]}</h4>
+                        <a href="${video[1]}" target="_blank" onclick="saveProgress('${key}')">${video[1]}</a>
+                    </div>
+                    ${watched}
+                </div>`;
+            });
+            document.getElementById('modalVideos').innerHTML = videoHtml;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // 点击模态框背景关闭弹窗
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) closeModal();
+        };
+
+        // 存储观看进度（使用localStorage）
+        function saveProgress(key) {
+            localStorage.setItem(`watched_${key}`, 'true');
+        }
+
+        // 检查是否已观看
+        function isWatched(key) {
+            return localStorage.getItem(`watched_${key}`) === 'true';
+        }
+
+        // 学习计划生成
+        function generatePlan(days = 7) {
+            const allModules = Object.keys(videos);
+            const planList = document.getElementById('planList');
+            planList.innerHTML = '';            
+            const today = new Date().toISOString().split('T')[0];            
+            
+            for (let i = 0; i < days; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                const dateStr = date.toISOString().split('T')[0];
+                const modIndex = i % allModules.length;
+                const module = allModules[modIndex];
+                const isToday = dateStr === today;                
+                
+                // 修复字符串拼接语法错误
+                planList.innerHTML += `
+                <div class="plan-item ${isToday ? 'today' : ''}">
+                    <div class="plan-date">${formatDate(dateStr)} ${isToday ? '[今日任务]' : ''}</div>
+                    <div class="plan-module">📚 学习模块：${module}</div>
+                    <div class="plan-goal">🎯 学习目标：完成至少1个视频的学习与实操</div>
+                </div>`;
+            }
+        }
+
+        // 日期格式化辅助函数（将YYYY-MM-DD转换为YYYY年MM月DD日）
+        function formatDate(dateStr) {
+            const [year, month, day] = dateStr.split('-');
+            return `${year}年${month}月${day}日`;
+        }
+    </script>
+</body>
 </html>
